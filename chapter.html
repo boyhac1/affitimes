@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <title>Chapter Videos - affitimes</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div><div class="background-gradient"></div><div class="overlay"></div>
+    <header class="header"><nav class="navbar container"><a href="index.html" class="logo">affitimes</a><ul class="nav-menu" id="nav-menu"></ul><div class="header-actions"><button class="theme-switcher" id="theme-switcher"><i class="fas fa-moon"></i></button><button class="menu-icon" id="menu-icon"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button></div></nav></header>
+    <aside class="sidebar" id="sidebar"><div class="sidebar-header"><a href="index.html" class="logo">affitimes</a><button class="close-btn" id="close-btn">&times;</button></div><nav class="sidebar-nav" id="sidebar-nav"></nav></aside>
+    <main class="main-content container"><section class="content-section"><nav id="breadcrumb-container" class="breadcrumb"></nav><div id="page-header-container" class="page-header"></div><div id="video-list" class="grid-container"></div></section></main>
+    <footer class="footer"><div class="container"><p>&copy; 2025 affitimes. All Rights Reserved.</p></div></footer>
+    <script src="data.js"></script><script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const chapterId = params.get('id');
+        const isOneShot = chapterId.includes('_oneshot');
+        const source = isOneShot ? database.oneShotSubjects : database.subjects;
+        const subjectKey = Object.keys(source).find(key => source[key].chapters.some(ch => ch.id === chapterId));
+        const subject = source[subjectKey];
+        const chapter = subject ? subject.chapters.find(c => c.id === chapterId) : null;
+
+        if (chapter) {
+            document.title = `${chapter.name} - affitimes`;
+            const navMenu = document.getElementById('nav-menu');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            navMenu.innerHTML = `<li><a href="index.html" class="nav-link">Home</a></li><li><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}">HSC One Shot</a></li><li><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}">Admission Series</a></li><li><a href="#" class="nav-link">Study Materials</a></li>`;
+            sidebarNav.innerHTML = `<a href="index.html" class="nav-link"><i class="fas fa-home-alt"></i><span>Home</span></a><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}"><i class="fas fa-rocket"></i><span>HSC One Shot</span></a><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}"><i class="fas fa-graduation-cap"></i><span>Admission Series</span></a><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>Study Materials</span></a><a href="#" class="nav-link"><i class="fas fa-university"></i><span>Admission</span></a>`;
+            const breadcrumbTypeLink = isOneShot ? `<a href="hsc-one-shot.html">HSC One Shot</a>` : `<a href="admission.html">Admission Series </a>`;
+            document.getElementById('breadcrumb-container').innerHTML = `<a href="index.html">Home</a> &raquo; ${breadcrumbTypeLink} &raquo; <a href="subject.html?type=${isOneShot ? 'oneShot' : 'series'}&id=${subjectKey}">${subject.name}</a> &raquo; <span class="current">${chapter.name}</span>`;
+            document.getElementById('page-header-container').innerHTML = `<h1 class="page-title">${chapter.name} - All Classes</h1>`;
+            
+            const videoListContainer = document.getElementById('video-list');
+            const chapterVideos = Object.entries(database.videos).filter(([key, video]) => video.chapterId === chapterId);
+            
+            if (chapterVideos.length > 0) {
+                chapterVideos.sort(([keyA], [keyB]) => {
+                    const numA = parseInt((keyA.match(/lec(\d+)$/) || [])[1] || 0);
+                    const numB = parseInt((keyB.match(/lec(\d+)$/) || [])[1] || 0);
+                    return numA - numB;
+                });
+
+                chapterVideos.forEach(([videoId, video]) => {
+                    // youtubeId সরাসরি ব্যবহার করা হচ্ছে
+                    if (video.youtubeId) {
+                       videoListContainer.innerHTML += `<a href="video.html?id=${videoId}" class="video-card"><div class="video-thumbnail"><img src="https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg" alt="${video.title}"><div class="play-icon"><i class="fas fa-play"></i></div></div><div class="video-card-info"><h4 class="video-card-title">${video.title}</h4><p class="video-card-instructor">শিক্ষক: ${video.instructor.name}</p></div></a>`;
+                    }
+                });
+            } else { videoListContainer.innerHTML = '<p>এই অধ্যায়ের ক্লাস শীঘ্রই যুক্ত করা হবে।</p>'; }
+        } else { document.getElementById('page-header-container').innerHTML = `<h1 class="page-title">Chapter Not Found</h1>`; }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+/* ========================= CSS ভেরিয়েবলস (থিম ও ফন্ট) ========================= */
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --primary-accent: #4f46e5;
+    --secondary-accent: #14b8a6;
+    --header-height: 70px;
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Hind Siliguri', sans-serif;
+}
+
+body.light-theme {
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+}
+
+/* ========================= বেস এবং রিসেট স্টাইল ========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+h1, h2, h3, h4, .nav-link, .logo, .btn-primary, .card-title, .item-title, .video-card-title, .page-title, .breadcrumb, .instructor-info h3, .download-section h3 {
+    font-family: var(--font-heading);
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+/* ========================= অ্যানিমেটেড ব্যাকগ্রাউন্ড ========================= */
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: linear-gradient(225deg, var(--primary-accent), var(--secondary-accent), var(--bg-color), var(--bg-color));
+    background-size: 250% 250%;
+    animation: gradient-animation 20s ease infinite;
+    opacity: 0.1;
+}
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ========================= PRELOADER (নির্ভুল সমাধান) ========================= */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--primary-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================= হেডার ========================= */
+.header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    background-color: color-mix(in srgb, var(--bg-color) 70%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-accent);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.theme-switcher {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.theme-switcher:hover {
+    border-color: var(--primary-accent);
+    color: var(--primary-accent);
+    transform: rotate(15deg);
+}
+
+.menu-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 25px;
+    z-index: 1002;
+}
+
+.menu-icon .bar {
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+.menu-icon.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.menu-icon.active .bar:nth-child(2) { opacity: 0; }
+.menu-icon.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* ========================= সাইডবার ========================= */
+.sidebar {
+    position: fixed; top: 0; right: 0; width: 320px; max-width: 90%; height: 100%;
+    background-color: var(--bg-color); z-index: 1001; display: flex; flex-direction: column;
+    border-left: 1px solid var(--border-color); transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+.sidebar.active { transform: translateX(0); }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 25px; height: var(--header-height); border-bottom: 1px solid var(--border-color); }
+.close-btn { background: none; border: none; font-size: 2.5rem; color: var(--text-secondary); cursor: pointer; transition: all 0.3s ease; }
+.close-btn:hover { color: var(--primary-accent); transform: rotate(90deg); }
+.sidebar-nav { padding: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.sidebar-nav .nav-link { font-size: 1.1rem; color: var(--text-secondary); padding: 15px; border-radius: 8px; transition: all 0.3s ease; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+.sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active { color: var(--text-primary); background-color: var(--card-bg); }
+.sidebar-nav .nav-link i { font-size: 1.2rem; color: var(--secondary-accent); width: 25px; text-align: center; }
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; }
+.overlay.active { opacity: 1; visibility: visible; }
+
+/* ========================= মূল কন্টেন্ট এবং হিরো সেকশন ========================= */
+.main-content { padding-top: var(--header-height); }
+.hero-section { min-height: calc(100vh - var(--header-height)); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; }
+.hero-title { font-size: clamp(2.8rem, 8vw, 6rem); font-weight: 700; line-height: 1.1; margin-bottom: 20px; }
+.hero-title span, .hero-subtitle, .hero-buttons { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.5s forwards; animation-delay: calc(var(--i) * 0.1s); }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+.hero-subtitle { font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 40px; }
+.btn-primary { padding: 14px 32px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; background-image: linear-gradient(90deg, var(--primary-accent) 0%, var(--secondary-accent) 100%); color: #fff; background-size: 200% auto; transition: all 0.3s ease; cursor: pointer; }
+.btn-primary:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 10px 20px -10px color-mix(in srgb, var(--primary-accent) 50%, transparent); }
+
+/* ========================= ক্যাটাগরি এবং কার্ড স্টাইল ========================= */
+.content-section { padding: 100px 0; }
+.section-title { font-size: 2.5rem; text-align: center; margin-bottom: 50px; color: var(--text-secondary); }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+.category-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; transition: all 0.3s ease; position: relative; opacity: 0; transform: translateY(50px); animation: cardFadeIn 0.6s ease-out forwards; animation-delay: calc(var(--i) * 0.1s); }
+@keyframes cardFadeIn { to { opacity: 1; transform: translateY(0); } }
+.category-card:hover { transform: translateY(-8px); border-color: var(--primary-accent); box-shadow: 0 20px 30px -15px color-mix(in srgb, var(--bg-color) 50%, transparent); }
+.card-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+.card-description { color: var(--text-secondary); font-size: 1rem; }
+.card-icon { font-size: 1.2rem; color: var(--text-secondary); transition: all 0.3s ease; position: absolute; bottom: 30px; right: 30px; }
+.category-card:hover .card-icon { color: var(--primary-accent); transform: translateX(5px); }
+
+/* ========================= সাব-পেজ (বিষয়, অধ্যায়, ভিডিও) ========================= */
+.page-header { margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+.page-title { font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; }
+.breadcrumb { padding: 20px 0; color: var(--text-secondary); font-size: 0.95rem; display: flex; flex-wrap: wrap; align-items: center; }
+.breadcrumb a:hover { color: var(--primary-accent); }
+.breadcrumb span { margin: 0 10px; }
+.breadcrumb .current { color: var(--text-primary); font-weight: 500; }
+.list-item-card { display: flex; justify-content: space-between; align-items: center; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; transition: all 0.3s ease; }
+.list-item-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary-accent); }
+.item-title { font-size: 1.3rem; font-weight: 500; color: var(--text-primary); margin: 0; }
+.item-subtitle { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
+.arrow-icon { font-size: 1.5rem; color: var(--text-secondary); transition: transform 0.3s ease, color 0.3s ease; }
+.list-item-card:hover .arrow-icon { color: var(--primary-accent); transform: translateX(5px); }
+.video-card { display: block; background-color: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+.video-card:hover { transform: translateY(-8px); box-shadow: 0 15px 25px -10px rgba(0, 0, 0, 0.2); border-color: var(--primary-accent); }
+.video-thumbnail { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }
+.video-thumbnail img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 60px; height: 60px; background-color: rgba(0, 0, 0, 0.6); color: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; opacity: 0; transition: all 0.3s ease; }
+.video-card:hover .play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.video-card-info { padding: 20px; }
+.video-card-title { color: var(--text-primary); font-size: 1.1rem; margin: 0 0 8px; }
+.video-card-instructor { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
+.video-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+@media (min-width: 992px) { .video-grid { grid-template-columns: 3fr 1fr; } }
+.video-main-content { display: flex; flex-direction: column; gap: 25px; }
+.video-info, .instructor-info, .download-section { background-color: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
+.video-info h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 10px; }
+.instructor-info { display: flex; align-items: center; gap: 20px; }
+.instructor-info img { width: 60px; height: 60px; border-radius: 50%; }
+.download-buttons { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+.download-btn { background: var(--primary-accent); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px; border: 2px solid transparent; }
+.download-btn:hover { background: transparent; border-color: var(--primary-accent); color: var(--primary-accent); transform: translateY(-3px); }
+
+/* ========================= কাস্টম ভিডিও প্লেয়ার (Plyr.io) স্টাইল ========================= */
+.plyr {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 25px;
+}
+:root {
+    --plyr-color-main: var(--primary-accent);
+    --plyr-control-radius: 8px;
+    --plyr-font-family: var(--font-body);
+}
+.plyr--video .plyr__control.plyr__tab-focus,
+.plyr--video .plyr__control:hover,
+.plyr--video .plyr__control[aria-expanded=true] {
+    background: var(--primary-accent);
+}
+.plyr__control--overlaid {
+    background: color-mix(in srgb, var(--primary-accent) 80%, transparent);
+}
+.plyr__video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+}
+.plyr__video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ========================= ফুটার ========================= */
+.footer { padding: 40px 0; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-secondary); }
+
+/* ========================= রেসপন্সিভ ডিজাইন ========================= */
+@media (max-width: 992px) { .nav-menu { display: none; } .menu-icon { display: flex; } }
+@media (max-width: 768px) {
+    .hero-section { align-items: center; text-align: center; }
+    .hero-title { font-size: 3rem; }
+    .hero-subtitle { font-size: 1.2rem; }
+    .section-title { font-size: 2rem; }
+}
+
+/* ========================= কাস্টম প্লেয়ার স্টাইল (ইউজারের অনুরোধ অনুযায়ী) ========================= */
+
+/* হলুদ বৃত্তে থাকা ভলিউম কন্ট্রোলটি ছোট করার জন্য */
+.plyr--video .plyr__controls .plyr__volume {
+    flex: none; /* ফ্লেক্স সাইজ কমানো হয়েছে */
+    width: 100px; /* একটি নির্দিষ্ট প্রস্থ দেওয়া হয়েছে */
+}
+
+/* লাল বৃত্তে থাকা প্রোগ্রেস বার (ভিডিও SEEK) বড় করার জন্য */
+.plyr--video .plyr__controls .plyr__progress__container {
+    flex: 1 2 auto; /* এটিকে বাকি জায়গা নিতে বলা হয়েছে */
+    margin: 5px; /* দুই পাশে একটু জায়গা রাখা হয়েছে */
+}
+
+/* প্লে/পজ বাটন ও সময় প্রদর্শনের অংশ ঠিক রাখা */
+.plyr__controls__item.plyr__control {
+    flex-shrink: 0; /* বাটনগুলো যেন ছোট না হয়ে যায় */
+}

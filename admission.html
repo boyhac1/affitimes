@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <title>Admission Series - affitimes</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div><div class="background-gradient"></div><div class="overlay"></div>
+    <header class="header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo">affitimes</a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="admission.html" class="nav-link active">Admission Series</a></li>
+                <li><a href="hsc-one-shot.html" class="nav-link">HSC One Shot</a></li>
+                <li><a href="#" class="nav-link">Study Materials</a></li>
+            </ul>
+            <div class="header-actions"><button class="theme-switcher" id="theme-switcher"><i class="fas fa-moon"></i></button><button class="menu-icon" id="menu-icon"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button></div>
+        </nav>
+    </header>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><a href="index.html" class="logo">affitimes</a><button class="close-btn" id="close-btn">&times;</button></div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-link"><i class="fas fa-home-alt"></i><span>Home</span></a>
+            <a href="admission.html" class="nav-link active"><i class="fas fa-graduation-cap"></i><span>Admission Series</span></a>
+            <a href="hsc-one-shot.html" class="nav-link"><i class="fas fa-rocket"></i><span>HSC One Shot</span></a>
+            <a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>Study Materials</span></a>
+            <a href="#" class="nav-link"><i class="fas fa-university"></i><span>Admission</span></a>
+        </nav>
+    </aside>
+    <main class="main-content container">
+        <section class="content-section">
+            <nav class="breadcrumb"><a href="index.html">Home</a> <span>&raquo;</span> <span class="current">Admission Series</span></nav>
+            <div class="page-header"><h1 class="page-title">Admission Series - Subjects</h1></div>
+            <div id="subject-list" class="grid-container" style="grid-template-columns: 1fr; gap: 15px;"></div>
+        </section>
+    </main>
+    <footer class="footer"><div class="container"><p>&copy; 2025 affitimes. All Rights Reserved.</p></div></footer>
+    <script src="data.js"></script><script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const subjectListContainer = document.getElementById('subject-list');
+            if (subjectListContainer) {
+                const subjectKeys = Object.keys(database.subjects);
+                subjectKeys.forEach(key => {
+                    const subject = database.subjects[key];
+                    const subjectCard = `<a href="subject.html?id=${key}" class="list-item-card"><div><h3 class="item-title">${subject.name}</h3><p class="item-subtitle">${subject.bn_name}</p></div><i class="fas fa-chevron-right arrow-icon"></i></a>`;
+                    subjectListContainer.innerHTML += subjectCard;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

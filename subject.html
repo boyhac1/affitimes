@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <title>Subject Chapters - affitimes</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div><div class="background-gradient"></div><div class="overlay"></div>
+    <header class="header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo">affitimes</a>
+            <ul class="nav-menu" id="nav-menu"></ul>
+            <div class="header-actions">
+                <button class="theme-switcher" id="theme-switcher"><i class="fas fa-moon"></i></button>
+                <button class="menu-icon" id="menu-icon"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            </div>
+        </nav>
+    </header>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><a href="index.html" class="logo">affitimes</a><button class="close-btn" id="close-btn">&times;</button></div>
+        <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    </aside>
+    <main class="main-content container">
+        <section class="content-section">
+            <nav id="breadcrumb-container" class="breadcrumb"></nav>
+            <div id="page-header-container" class="page-header"></div>
+            <div id="chapter-list" class="grid-container" style="grid-template-columns: 1fr; gap: 15px;"></div>
+        </section>
+    </main>
+    <footer class="footer"><div class="container"><p>&copy; 2025 affitimes. All Rights Reserved.</p></div></footer>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const subjectId = params.get('id');
+            const type = params.get('type');
+            const isOneShot = type === 'oneShot';
+            const source = isOneShot ? database.oneShotSubjects : database.subjects;
+            const subject = source[subjectId];
+
+            if (subject) {
+                document.title = `${subject.name} - affitimes`;
+                
+                const navMenu = document.getElementById('nav-menu');
+                const sidebarNav = document.getElementById('sidebar-nav');
+                navMenu.innerHTML = `<li><a href="index.html" class="nav-link">Home</a></li><li><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}">HSC One Shot</a></li><li><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}">Admission Series</a></li><li><a href="#" class="nav-link">Study Materials</a></li>`;
+                sidebarNav.innerHTML = `<a href="index.html" class="nav-link"><i class="fas fa-home-alt"></i><span>Home</span></a><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}"><i class="fas fa-rocket"></i><span>HSC One Shot</span></a><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}"><i class="fas fa-graduation-cap"></i><span>Admission Series</span></a><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>Study Materials</span></a><a href="#" class="nav-link"><i class="fas fa-university"></i><span>Admission</span></a>`;
+                
+                const breadcrumbTypeLink = isOneShot ? `<a href="hsc-one-shot.html">HSC One Shot</a>` : `<a href="admission.html">Admission Series</a>`;
+                document.getElementById('breadcrumb-container').innerHTML = `<a href="index.html">Home</a> &raquo; ${breadcrumbTypeLink} &raquo; <span class="current">${subject.name}</span>`;
+                document.getElementById('page-header-container').innerHTML = `<h1 class="page-title">${subject.name}</h1>`;
+                
+                const chapterListContainer = document.getElementById('chapter-list');
+                if (subject.chapters && subject.chapters.length > 0) {
+                    // অধ্যায়গুলোকে তাদের আইডি (ch1, ch2) অনুযায়ী সর্ট বা সাজানো হচ্ছে
+                    const sortedChapters = [...subject.chapters].sort((a, b) => {
+                        const numA = parseInt((a.id.match(/_ch(\d+)/) || [])[1] || 0);
+                        const numB = parseInt((b.id.match(/_ch(\d+)/) || [])[1] || 0);
+                        return numA - numB;
+                    });
+
+                    sortedChapters.forEach(chapter => {
+                        chapterListContainer.innerHTML += `<a href="chapter.html?id=${chapter.id}" class="list-item-card"><div><h3 class="item-title">${chapter.name}</h3><p class="item-subtitle">${chapter.bn_name}</p></div><i class="fas fa-chevron-right arrow-icon"></i></a>`;
+                    });
+                } else { chapterListContainer.innerHTML = "<p>এই বিষয়ের অধ্যায় শীঘ্রই যুক্ত করা হবে।</p>"; }
+            } else { document.getElementById('page-header-container').innerHTML = `<h1 class="page-title">Subject Not Found</h1>`; }
+        });
+    </script>
+</body>
+</html>

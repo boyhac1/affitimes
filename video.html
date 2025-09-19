@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <title>Video Player - affitimes</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div><div class="background-gradient"></div><div class="overlay"></div>
+    <header class="header"><nav class="navbar container"><a href="index.html" class="logo">affitimes</a><ul class="nav-menu" id="nav-menu"></ul><div class="header-actions"><button class="theme-switcher" id="theme-switcher"><i class="fas fa-moon"></i></button><button class="menu-icon" id="menu-icon"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button></div></nav></header>
+    <aside class="sidebar" id="sidebar"><div class="sidebar-header"><a href="index.html" class="logo">affitimes</a><button class="close-btn" id="close-btn">&times;</button></div><nav class="sidebar-nav" id="sidebar-nav"></nav></aside>
+    <main class="main-content container"><section class="content-section"><nav id="breadcrumb-container" class="breadcrumb"></nav><div id="video-player-container" class="video-grid"><div class="video-main-content"><div id="player" data-plyr-provider="youtube"></div><div id="video-info-container"></div></div></div></section></main>
+    <footer class="footer"><div class="container"><p>&copy; 2025 affitimes. All Rights Reserved.</p></div></footer>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="data.js"></script><script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const videoKey = params.get('id');
+            const video = database.videos[videoKey];
+
+            if (video && video.youtubeId) {
+                const isOneShot = video.slideUrl !== undefined;
+                // সোর্স সঠিকভাবে নির্ধারণ করা হচ্ছে
+                const source = isOneShot ? database.oneShotSubjects : database.subjects;
+                
+                const subjectKey = Object.keys(source).find(key => 
+                    source[key].chapters && source[key].chapters.some(ch => ch.id === video.chapterId)
+                );
+
+                // সাবজেক্ট এবং চ্যাপ্টার পাওয়া গেলেই কেবল কোড চলবে
+                if (subjectKey) {
+                    const subject = source[subjectKey];
+                    const chapter = subject.chapters.find(c => c.id === video.chapterId);
+
+                    if (subject && chapter) {
+                        document.title = `${video.title} - affitimes`;
+                        
+                        const navMenu = document.getElementById('nav-menu');
+                        const sidebarNav = document.getElementById('sidebar-nav');
+                        navMenu.innerHTML = `<li><a href="index.html" class="nav-link">Home</a></li><li><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}">HSC One Shot</a></li><li><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}">Admission Series</a></li><li><a href="#" class="nav-link">Study Materials</a></li>`;
+                        sidebarNav.innerHTML = `<a href="index.html" class="nav-link"><i class="fas fa-home-alt"></i><span>Home</span></a><a href="hsc-one-shot.html" class="nav-link ${isOneShot ? 'active' : ''}"><i class="fas fa-rocket"></i><span>HSC One Shot</span></a><a href="admission.html" class="nav-link ${!isOneShot ? 'active' : ''}"><i class="fas fa-graduation-cap"></i><span>Admission Series</span></a><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>Study Materials</span></a><a href="#" class="nav-link"><i class="fas fa-university"></i><span>Admission</span></a>`;
+                        
+                        const breadcrumbTypeLink = isOneShot ? `<a href="hsc-one-shot.html">HSC One Shot</a>` : `<a href="admission.html">Admission Series</a>`;
+                        document.getElementById('breadcrumb-container').innerHTML = `<a href="index.html">Home</a> &raquo; ${breadcrumbTypeLink} &raquo; <a href="subject.html?type=${isOneShot ? 'oneShot' : 'series'}&id=${subjectKey}">${subject.name}</a> &raquo; <a href="chapter.html?id=${chapter.id}">${chapter.name}</a> &raquo; <span class="current">Class</span>`;
+                        
+                        const videoInfoContainer = document.getElementById('video-info-container');
+                        const downloadButtonsHTML = `${(video.downloads && video.downloads.lectureSheet) ? `<a href="${video.downloads.lectureSheet}" class="download-btn" target="_blank"><i class="fas fa-file-pdf"></i> Lecture Sheet</a>` : ''}${(video.slideUrl) ? `<a href="${video.slideUrl}" class="download-btn" target="_blank"><i class="fas fa-person-chalkboard"></i> Download Slide</a>` : ''}`;
+                        videoInfoContainer.innerHTML = `<div class="video-info"><h1>${video.title}</h1></div><div class="instructor-info"><img src="${video.instructor?.avatar || 'https://via.placeholder.com/60'}" alt="${video.instructor?.name || 'Instructor'}"><div><h3>শিক্ষক: ${video.instructor?.name || 'N/A'}</h3></div></div><div class="download-section"><h3>প্রয়োজনীয় রিসোর্স</h3><div class="download-buttons">${downloadButtonsHTML.trim() === '' ? '<p>No materials available.</p>' : downloadButtonsHTML}</div></div>`;
+                        
+                        const playerDiv = document.getElementById('player');
+                        playerDiv.setAttribute('data-plyr-embed-id', video.youtubeId);
+                        const player = new Plyr('#player', {
+                            youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 },
+                            quality: { default: 720, options: [1080, 720, 480, 240] },
+                            tooltips: { controls: true, seek: true }
+                        });
+                        return; // সফলভাবে শেষ হলে এখান থেকে বেরিয়ে যাবে
+                    }
+                }
+            }
+            // যদি কোনো কারণে ভিডিও বা চ্যাপ্টার খুঁজে না পাওয়া যায়
+            document.getElementById('video-player-container').innerHTML = `<div class="page-header"><h1 class="page-title">Video Not Found or Data Error</h1></div>`;
+        });
+    </script>
+</body>
+</html>
