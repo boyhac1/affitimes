@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom | Affitimes</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="brand-area">
+            <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+            <a href="index.html" class="logo">affi<span>times</span></a>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="refreshDatabase()"><i id="refresh-icon" class="fas fa-sync-alt"></i></button>
+            <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-links" id="sidebar-menu">
+            <a href="index.html" class="nav-item"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            <div class="nav-head">Current Playlist</div>
+            <div id="side-pl"></div>
+        </nav>
+    </aside>
+
+    <main class="main-wrapper" id="main">
+        <div id="progress-area" class="loading-bar"><div id="progress-fill" class="loading-fill"></div></div>
+
+        <div class="player-grid">
+            <!-- LEFT -->
+            <div class="left-col">
+                <div class="video-wrapper">
+                    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+                </div>
+
+                <div class="vid-meta">
+                    <h1 id="v-title" class="vid-h1">Loading Class...</h1>
+                    <div class="vid-sub">
+                        <span><i class="fas fa-chalkboard-teacher"></i> <span id="v-inst">...</span></span>
+                        <span id="v-chap" style="border-left:1px solid var(--border); padding-left:15px; margin-left:10px;"></span>
+                    </div>
+
+                    <!-- BUTTONS SECTION -->
+                    <div class="action-row">
+                        <button id="btn-sheet" class="btn-download" style="display:none;" onclick="openLink()">
+                            <i class="fas fa-file-pdf"></i> Download Sheet
+                        </button>
+                        <button id="btn-slide" class="btn-view" style="display:none;" onclick="toggleSlide()">
+                            <i class="fas fa-file-powerpoint"></i> View Slide
+                        </button>
+                    </div>
+
+                    <div id="slide-box" class="embed-box"></div>
+
+                    <div style="margin-top:20px; padding:15px; background:rgba(239,68,68,0.1); border-left:4px solid #ef4444; border-radius:6px; color:#fca5a5; font-size:0.85rem;">
+                        <strong>Disclaimer:</strong> Videos owned by respective creators. We do not host any files.
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="right-col">
+                <div class="playlist-panel">
+                    <div class="pl-head">Course Content</div>
+                    <div class="pl-body" id="playlist-list"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script src="data.js"></script>
+<script>
+    function toggleSidebar() {
+        const sb = document.getElementById('sidebar');
+        const mn = document.getElementById('main');
+        if(window.innerWidth <= 1024) sb.classList.toggle('active');
+        else { sb.classList.toggle('closed'); mn.classList.toggle('full'); }
+    }
+    if(window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('closed');
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-theme');
+        localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+    }
+    if(localStorage.getItem('theme') === 'light') toggleTheme();
+
+    // RESOURCES
+    let sheetUrl = '';
+    let slideUrl = '';
+    
+    function openLink() { if(sheetUrl) window.open(sheetUrl, '_blank'); }
+    
+    function toggleSlide() {
+        const box = document.getElementById('slide-box');
+        if(box.style.display === 'none') {
+            box.style.display = 'block';
+            box.innerHTML = `<iframe src="${slideUrl}" width="100%" height="100%"></iframe>`;
+        } else {
+            box.style.display = 'none';
+            box.innerHTML = '';
+        }
+    }
+
+    let player;
+    document.addEventListener('appReady', () => {
+        const params = new URLSearchParams(window.location.search);
+        let vKey = params.get('v');
+        const subId = params.get('sub');
+
+        if(!vKey && subId) {
+            for(let k in store.videos) { if(store.videos[k].subId === subId) { vKey = k; break; } }
+        }
+
+        const vid = store.videos[vKey];
+        if(!vid) return;
+
+        // Player
+        if(player) player.destroy();
+        document.getElementById('player').setAttribute('data-plyr-embed-id', vid.yId);
+        player = new Plyr('#player', {
+            controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+            seekTime: 10,
+            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
+        });
+
+        // Info
+        document.title = vid.title;
+        document.getElementById('v-title').innerText = vid.title;
+        document.getElementById('v-inst').innerText = vid.instructor;
+        document.getElementById('v-chap').innerText = vid.chapName || 'Chapter';
+
+        // Buttons Visibility
+        const btnS = document.getElementById('btn-sheet');
+        const btnSl = document.getElementById('btn-slide');
+        
+        btnS.style.display = 'none';
+        btnSl.style.display = 'none';
+
+        if(vid.lecture) { btnS.style.display = 'inline-flex'; sheetUrl = vid.lecture; }
+        if(vid.slide) { 
+            btnSl.style.display = 'inline-flex'; 
+            slideUrl = vid.slide.replace('/view', '/preview'); 
+        }
+
+        // Playlist
+        const plDiv = document.getElementById('playlist-list');
+        const sidePl = document.getElementById('side-pl');
+        plDiv.innerHTML = ''; sidePl.innerHTML = '';
+
+        const related = Object.values(store.videos)
+            .filter(v => v.subId === vid.subId)
+            .sort((a,b)=>a.title.localeCompare(b.title, undefined, {numeric:true}));
+
+        related.forEach(v => {
+            const active = v.key === vKey ? 'active' : '';
+            
+            plDiv.innerHTML += `
+                <div class="pl-row ${active}" onclick="window.location.href='class.html?v=${v.key}'">
+                    <img src="https://img.youtube.com/vi/${v.yId}/mqdefault.jpg" class="pl-thumb" loading="lazy">
+                    <div class="pl-info"><h4>${v.title}</h4></div>
+                </div>`;
+            
+            sidePl.innerHTML += `
+                <div class="nav-item ${active}" onclick="window.location.href='class.html?v=${v.key}'">
+                    <i class="fas fa-play-circle"></i> <span>${v.title.substring(0,20)}...</span>
+                </div>`;
+        });
+        
+        setTimeout(() => {
+            const act = document.querySelector('.pl-row.active');
+            if(act) act.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
+    });
+</script>
+</body>
+</html>

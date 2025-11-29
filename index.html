@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affitimes | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="brand-area">
+            <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+            <a href="index.html" class="logo">affi<span>times</span></a>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="refreshDatabase()"><i id="refresh-icon" class="fas fa-sync-alt"></i></button>
+            <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-links" id="sidebar-menu"></nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-wrapper" id="main">
+        <div id="progress-area" class="loading-bar"><div id="progress-fill" class="loading-fill"></div></div>
+
+        <div class="hero-card">
+            <div style="width:100%">
+                <h1>Welcome to <br><span>Affitimes Classroom</span></h1>
+                <p style="margin:0 auto 20px; max-width:600px;">Premium educational content, structured for success.</p>
+                <div class="stats-row">
+                    <div class="stat-box"><span class="stat-n" id="st-class">0</span><span class="stat-l">Classes</span></div>
+                    <div class="stat-box"><span class="stat-n" id="st-sub">0</span><span class="stat-l">Subjects</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="home-content"></div>
+    </main>
+
+    <script src="data.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const mn = document.getElementById('main');
+            if(window.innerWidth <= 1024) sb.classList.toggle('active');
+            else { sb.classList.toggle('closed'); mn.classList.toggle('full'); }
+        }
+        if(window.innerWidth <= 1024) document.getElementById('sidebar').classList.add('closed');
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+        }
+        if(localStorage.getItem('theme') === 'light') toggleTheme();
+
+        document.addEventListener('appReady', () => {
+            document.getElementById('st-class').innerText = store.stats.total;
+            document.getElementById('st-sub').innerText = store.stats.subjects;
+
+            const menu = document.getElementById('sidebar-menu');
+            const content = document.getElementById('home-content');
+            
+            menu.innerHTML = `<div class="nav-item active" onclick="location.href='index.html'"><i class="fas fa-th-large"></i> Dashboard</div>`;
+            content.innerHTML = '';
+
+            Object.keys(store.categories).forEach(cat => {
+                menu.innerHTML += `<div class="nav-head">${cat}</div>`;
+                let html = `<h3 style="margin:30px 0 15px; border-left:4px solid var(--primary); padding-left:15px; font-size:1.4rem;">${cat}</h3><div class="grid-container">`;
+
+                Object.values(store.categories[cat]).forEach(sub => {
+                    menu.innerHTML += `<div class="nav-item" onclick="window.location.href='class.html?sub=${sub.id}'"><i class="fas fa-book"></i> ${sub.name}</div>`;
+                    
+                    html += `
+                        <div class="course-item" onclick="window.location.href='class.html?sub=${sub.id}'">
+                            <div class="thumb-wrap">
+                                <img src="https://img.youtube.com/vi/${store.videos[sub.videos[0]].yId}/mqdefault.jpg" loading="lazy">
+                                <div class="play-btn"><i class="fas fa-play"></i></div>
+                            </div>
+                            <div class="item-body">
+                                <div style="font-size:0.75rem; color:var(--primary); font-weight:600; margin-bottom:5px;">${sub.videos.length} Classes</div>
+                                <h4 class="c-title">${sub.name}</h4>
+                                <div class="c-meta"><span>${sub.bn || ''}</span><i class="fas fa-arrow-right"></i></div>
+                            </div>
+                        </div>`;
+                });
+                html += `</div>`;
+                content.innerHTML += html;
+            });
+        });
+    </script>
+</body>
+</html>
