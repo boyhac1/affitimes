@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affitimes | Advanced Learning</title>
+    <!-- Custom Fonts: Poppins (English) & Hind Siliguri (Bangla) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand" onclick="app.renderHome()">
+            <button class="btn-icon" id="sidebar-toggle" style="border:none; background:transparent; font-size:1.2rem; margin-right:5px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-cube" style="color:var(--primary)"></i>
+            <div style="font-family: 'Poppins', sans-serif;">Affi<span>times</span></div>
+        </div>
+
+        <input type="text" class="search-bar" placeholder="Search topics, notes..." onkeyup="app.search(this.value)">
+
+        <div class="controls">
+            <button class="btn-icon" onclick="app.syncData(true)" title="Force Sync"><i class="fas fa-sync-alt"></i></button>
+            <button class="btn-icon" onclick="app.toggleTheme()" title="Theme"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-group">
+                <div class="nav-label">Menu</div>
+                <div class="nav-item active" onclick="app.renderHome()"><i class="fas fa-th-large"></i> Dashboard</div>
+                <!-- Settings Button -->
+                <div class="nav-item" onclick="app.openSettings()"><i class="fas fa-cog"></i> Settings</div>
+            </div>
+            <div class="nav-group" id="course-menu"></div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="main-view" id="main-content">
+            <!-- Rendered by JS -->
+        </main>
+    </div>
+
+    <!-- PDF Modal -->
+    <div class="modal-overlay" id="pdf-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="pdf-title">Document Viewer</h3>
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <a id="pdf-download" href="#" target="_blank" class="btn-action-sm">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    <i class="fas fa-times modal-close" onclick="app.closeModal('pdf-modal')"></i>
+                </div>
+            </div>
+            <iframe id="pdf-frame" class="pdf-frame" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- Settings Modal (UPDATED) -->
+    <div class="modal-overlay" id="settings-modal" style="z-index: 3000;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fas fa-sliders-h"></i> Site Settings</h3>
+                <i class="fas fa-times modal-close" onclick="app.closeModal('settings-modal')"></i>
+            </div>
+            <div class="settings-body">
+                <!-- Auto Play Setting -->
+                <div class="setting-item">
+                    <div>
+                        <div class="s-title">Auto Play Video</div>
+                        <div class="s-desc">Videos will start automatically when clicked.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-autoplay" onchange="app.saveSettings()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- NEW: Update App Button -->
+                <div class="setting-item" style="border-top: 1px solid var(--border); margin-top: 15px; padding-top: 15px;">
+                    <div>
+                        <div class="s-title">System Update</div>
+                        <div class="s-desc">Fix bugs & get latest features (Clear Cache).</div>
+                    </div>
+                    <button class="btn-action-sm" onclick="app.hardReset()" style="background: var(--primary); border: none; cursor: pointer;">
+                        <i class="fas fa-cloud-download-alt"></i> Update
+                    </button>
+                </div>
+            </div>
+            <div style="padding:15px; text-align:right; border-top:1px solid var(--border)">
+                <button class="btn-action" onclick="app.closeModal('settings-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">Action Completed</div>
+
+    <!-- Floating Tools Button -->
+    <div class="fab-container">
+        <button class="fab-btn" onclick="app.toggleTools()"><i class="fas fa-tools"></i></button>
+    </div>
+
+    <!-- Floating Tools Panel -->
+    <div class="tools-panel" id="tools-panel">
+        <div class="tools-header">
+            <span>Study Tools</span>
+            <i class="fas fa-times" onclick="app.toggleTools()" style="cursor:pointer"></i>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tools-tabs">
+            <button class="t-tab active" onclick="app.switchTool('calc')">Calc</button>
+            <button class="t-tab" onclick="app.switchTool('note')">Note</button>
+        </div>
+
+        <!-- Calculator -->
+        <div id="tool-calc" class="tool-content">
+            <input type="text" id="calc-display" readonly>
+            <div class="calc-grid">
+                <button onclick="app.calcInput('7')">7</button> <button onclick="app.calcInput('8')">8</button> <button onclick="app.calcInput('9')">9</button> <button onclick="app.calcOp('/')">÷</button>
+                <button onclick="app.calcInput('4')">4</button> <button onclick="app.calcInput('5')">5</button> <button onclick="app.calcInput('6')">6</button> <button onclick="app.calcOp('*')">×</button>
+                <button onclick="app.calcInput('1')">1</button> <button onclick="app.calcInput('2')">2</button> <button onclick="app.calcInput('3')">3</button> <button onclick="app.calcOp('-')">-</button>
+                <button onclick="app.calcInput('0')">0</button> <button onclick="app.calcInput('.')">.</button> <button onclick="app.calcResult()" style="background:var(--primary);color:white">=</button> <button onclick="app.calcOp('+')">+</button>
+                <button onclick="app.calcClear()" style="grid-column: span 4; background:#ef4444; color:white">Clear</button>
+            </div>
+        </div>
+
+        <!-- Notepad -->
+        <div id="tool-note" class="tool-content" style="display:none">
+            <textarea id="quick-note" placeholder="Write quick notes here..." oninput="app.saveNote()"></textarea>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:5px">Autosaved to device</div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
